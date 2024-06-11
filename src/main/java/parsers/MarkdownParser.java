@@ -9,5 +9,5 @@ public interface MarkdownParser {
 
     public String toJavaSwingCode();
 
-    public JComponent toJavaSwingComponents();
+    public JComponent toJavaSwingComponent();
 }
