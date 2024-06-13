@@ -219,11 +219,11 @@ public class Main extends JFrame {
         example.append("---\n\n");
         example.append("> This is a block quote\n\n");
         example.append("This is a paragraph with a table:\n\n");
-        // example.append("| Header 1 | Header 2 | Header 3 |\n");
-        // example.append("|----------|----------|----------|\n");
-        // example.append("| Row 1 | Row 1 | Row 1 |\n");
-        // example.append("| Row 2 | Row 2 | Row 2 |\n");
-        // example.append("| Row 3 | Row 3 | Row 3 |\n\n");
+        example.append("| Header 1 | Header 2 | Header 3 |\n");
+        example.append("|----------|----------|----------|\n");
+        example.append("| Row 1 | Row 1 | Row 1 |\n");
+        example.append("| Row 2 | Row 2 | Row 2 |\n");
+        example.append("| Row 3 | Row 3 | Row 3 |\n\n");
         example.append("```java\n");
         example.append("public class Main {\n");
         example.append("    public static void main(String[] args) {\n");

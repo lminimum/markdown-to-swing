@@ -77,7 +77,6 @@ public class ParagraphParser implements MarkdownParser {
             } else if (matcher.group(14) != null) {
                 parts.add(new TextPart(matcher.group(14), TextFormatType.NORMAL));
             }
-            // TODO: inline images
         }
     }
 
@@ -213,7 +212,6 @@ public class ParagraphParser implements MarkdownParser {
                     BorderFactory.createMatteBorder(0, 0, 1, 0, java.awt.Color.GRAY)));
             return label;
         } else {
-
             JTextPane textPane = new JTextPane();
             textPane.setContentType("text/html");
             textPane.setEditable(false);

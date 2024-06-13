@@ -9,7 +9,6 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 public class DocumentParser implements MarkdownParser {
     private String text;
@@ -35,7 +34,7 @@ public class DocumentParser implements MarkdownParser {
     public void parse() {
         List<String> paragraphsAndHeadings = parseParagraphsAndHeadings();
         for (String paragraphOrHeading : paragraphsAndHeadings) {
-            System.out.println("\"" + paragraphOrHeading + "\"");
+            // System.out.println("\"" + paragraphOrHeading + "\"");
             if (paragraphOrHeading.trim().matches("^#+\\s.*")) { // Starts with one or more # followed by a space
                 // HEADING
                 HeadingParser heading = new HeadingParser(paragraphOrHeading);
@@ -61,12 +60,17 @@ public class DocumentParser implements MarkdownParser {
                 CodeParser codeBlock = new CodeParser(text);
                 codeBlock.parse();
                 paragraphs.add(codeBlock);
+            } else if (paragraphOrHeading.trim().split("\n")[0].matches("^\\s*\\|.*\\|\\s*$")) {
+                // TABLE
+                TableParser table = new TableParser(paragraphOrHeading);
+                table.parse();
+                paragraphs.add(table);
             } else {
                 // PARAGRAPH
                 ParagraphParser paragraph = new ParagraphParser(paragraphOrHeading);
                 paragraph.parse();
                 paragraphs.add(paragraph);
-            } // TODO: tables
+            }
         }
     }
 

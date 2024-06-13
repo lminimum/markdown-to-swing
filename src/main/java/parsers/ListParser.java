@@ -32,7 +32,6 @@ public class ListParser implements MarkdownParser {
         for (int i = 0; i < lines.length; i++) {
             this.items[i] = lines[i].replaceFirst("^([-|\\*|\\+]|\\d[\\.|\\)])\\s", "");
         }
-        // TODO: nested lists
     }
 
     private String getBullet(int index) {
