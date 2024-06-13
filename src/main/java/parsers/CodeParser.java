@@ -1,8 +1,8 @@
 package parsers;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
@@ -12,40 +12,53 @@ public class CodeParser implements MarkdownParser {
     private String text;
     public String language;
     public String code;
-    public boolean isInline;
 
-    public CodeParser(String text, boolean isInline) {
+    public CodeParser(String text) {
         this.text = text;
-        this.isInline = isInline;
     }
 
     @Override
     public Boolean validate() {
-        if (this.isInline) {
-            return this.text.trim().matches("^`.*`$");
-        } else {
-            return this.text.trim().matches("^```[\\s\\S.]*?```$");
-        }
+        return this.text.trim().matches("^```[\\s\\S.]*?```$");
     }
 
     @Override
     public void parse() {
-        if (this.isInline) {
-            this.code = this.text.replaceAll("^`|`$", "");
+        String[] splits = this.text.split("\n");
+        this.language = splits[0].replace("```", "").trim();
+        String textMinusFirstLine = this.text.replaceFirst("^.*?\\n", "");
+        if (textMinusFirstLine.endsWith("\n```")) {
+            this.code = textMinusFirstLine.replaceAll("\\n```$", "");
         } else {
-            String[] splits = this.text.split("\n");
-            this.language = splits[0].replace("```", "").trim();
-            this.code = String.join("\n", Arrays.copyOfRange(splits, 1, splits.length - 1));
+            this.code = textMinusFirstLine.replaceAll("```$", "");
         }
     }
 
     @Override
-    public String toJavaSwingCode() {
-        if (this.isInline) {
-            return "new JLabel(\"" + this.code + "\")";
-        } else {
-            return "new JScrollPane(new JTextArea(\"" + this.code + "\"))";
-        }
+    public String getResultPanelName(int paragraphCount) {
+        return "codeBlock" + paragraphCount + "ScrollPane";
+    }
+
+    @Override
+    public String toJavaSwingCode(int paragraphCount) {
+        String prefix = "codeBlock" + paragraphCount;
+        StringBuilder code = new StringBuilder();
+
+        String clean_code = this.code.replaceAll("\"", "\\\\\"").replaceAll("\n", "\\\\n");
+        code.append(
+                "JTextArea " + prefix + "TextArea = new JTextArea(\"" + clean_code
+                        + "\");\n");
+        code.append(prefix + "TextArea.setFont(new Font(\"Monospaced\", Font.PLAIN, 12));\n");
+        code.append(prefix + "TextArea.setBackground(new Color(50, 50, 50));\n");
+        code.append(prefix + "TextArea.setForeground(Color.WHITE);\n");
+        code.append(prefix + "TextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));\n\n");
+
+        code.append("JScrollPane " + prefix + "ScrollPane = new JScrollPane(" + prefix + "TextArea);\n");
+        code.append(prefix + "ScrollPane.setBackground(java.awt.Color.WHITE);\n");
+        code.append(prefix + "ScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));\n");
+        code.append(prefix + "ScrollPane.setPreferredSize(new Dimension(300, 150));");
+
+        return code.toString();
     }
 
     @Override
@@ -55,11 +68,13 @@ public class CodeParser implements MarkdownParser {
         codeTextArea.setBackground(new Color(50, 50, 50));
         codeTextArea.setForeground(Color.WHITE);
         codeTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        codeTextArea.setLineWrap(true);
-        codeTextArea.setWrapStyleWord(true);
 
         JScrollPane scrollPane = new JScrollPane(codeTextArea);
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        scrollPane.setBackground(java.awt.Color.WHITE);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        int lineCount = codeTextArea.getLineCount();
+        int lineHeight = codeTextArea.getFontMetrics(codeTextArea.getFont()).getHeight();
+        scrollPane.setMaximumSize(new Dimension(500, lineCount * lineHeight));
 
         return scrollPane;
     }

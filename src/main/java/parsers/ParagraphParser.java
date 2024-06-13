@@ -1,12 +1,12 @@
 package parsers;
 
 import java.awt.Color;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
@@ -37,44 +37,152 @@ public class ParagraphParser implements MarkdownParser {
         this.content = String.join(" ", this.text.split("\n"));
 
         Pattern pattern = Pattern.compile(
-                "(\\*\\*|__)(.*?)\\1|" + // Bold
+                "(`)(.*?)\\1|" + // Code block
+                        "(\\*\\*|__)(.*?)\\3|" + // Bold
                         "\\*(.*?)\\*|" + // Italic
                         "\\[(.*?)\\]\\((.*?)\\)|" + // Link
-                        "(~~)(.*?)\\6|" + // Strikethrough
-                        "(~)([^~]*)\\8|" + // Subscript
-                        "(\\^)([^\\^]*)\\10|" + // Superscript
-                        "([^\\*_\\[\\]\\~\\^]+)"); // Normal text
+                        "(~~)(.*?)\\8|" + // Strikethrough
+                        "(~)([^~]*)\\10|" + // Subscript
+                        "(\\^)([^\\^]*)\\12|" + // Superscript
+                        "([^\\*_\\[\\]\\~\\^`]+)"); // Normal text
         Matcher matcher = pattern.matcher(this.content);
 
         while (matcher.find()) {
             if (matcher.group(1) != null) {
-                parts.add(new TextPart(matcher.group(2), TextFormatType.BOLD));
+                parts.add(new TextPart(matcher.group(2), TextFormatType.CODE));
             } else if (matcher.group(3) != null) {
-                parts.add(new TextPart(matcher.group(3), TextFormatType.ITALIC));
-            } else if (matcher.group(4) != null) {
+                parts.add(new TextPart(matcher.group(4), TextFormatType.BOLD));
+            } else if (matcher.group(5) != null) {
+                parts.add(new TextPart(matcher.group(5), TextFormatType.ITALIC));
             } else if (matcher.group(6) != null) {
-                parts.add(new TextPart(matcher.group(7), TextFormatType.STRIKETHROUGH));
+                // parts.add(new LinkParser(matcher.group(6), matcher.group(7)));
             } else if (matcher.group(8) != null) {
-                parts.add(new TextPart(matcher.group(9), TextFormatType.SUBSCRIPT));
+                parts.add(new TextPart(matcher.group(9), TextFormatType.STRIKETHROUGH));
             } else if (matcher.group(10) != null) {
-                parts.add(new TextPart(matcher.group(11), TextFormatType.SUPERSCRIPT));
+                parts.add(new TextPart(matcher.group(11), TextFormatType.SUBSCRIPT));
             } else if (matcher.group(12) != null) {
-                parts.add(new TextPart(matcher.group(12), TextFormatType.NORMAL));
+                parts.add(new TextPart(matcher.group(13), TextFormatType.SUPERSCRIPT));
+            } else if (matcher.group(14) != null) {
+                parts.add(new TextPart(matcher.group(14), TextFormatType.NORMAL));
             }
+            // TODO: inline images
         }
     }
 
-    @Override
-    public String toJavaSwingCode() {
-        return "JLabel label = new JLabel(\"" + this.content + "\");";
+    private boolean anyPartHasType(TextFormatType type) {
+        for (TextPart part : parts) {
+            if (part.type == type) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public JScrollPane toJavaSwingComponent() {
+    public String getResultPanelName(int paragraphCount) {
+        return "paragraph" + paragraphCount;
+    }
+
+    @Override
+    public String toJavaSwingCode(int paragraphCount) {
+        String prefix = "paragraph" + paragraphCount;
+        StringBuilder code = new StringBuilder();
+        code.append("JTextPane " + prefix + " = new JTextPane();\n");
+        code.append(prefix + ".setContentType(\"text/html\");\n");
+        code.append(prefix + ".setEditable(false);\n");
+        code.append("StyledDocument " + prefix + "Doc = " + prefix + ".getStyledDocument();\n");
+        code.append(prefix + ".setMargin(new Insets(10, 10, 10, 10));\n\n");
+
+        if (anyPartHasType(TextFormatType.NORMAL)) {
+            code.append("Style regular" + paragraphCount + " = " + prefix + "Doc.addStyle(\"regular\", null);\n");
+            code.append("StyleConstants.setFontFamily(regular" + paragraphCount + ", \"SansSerif\");\n");
+        }
+
+        if (anyPartHasType(TextFormatType.BOLD)) {
+            code.append("Style bold" + paragraphCount + " = " + prefix + "Doc.addStyle(\"bold\", regular"
+                    + paragraphCount + ");\n");
+            code.append("StyleConstants.setBold(bold" + paragraphCount + ", true);\n");
+        }
+
+        if (anyPartHasType(TextFormatType.ITALIC)) {
+            code.append("Style italic" + paragraphCount + " = " + prefix + "Doc.addStyle(\"italic\", regular"
+                    + paragraphCount + ");\n");
+            code.append("StyleConstants.setItalic(italic" + paragraphCount + ", true);\n");
+        }
+
+        if (anyPartHasType(TextFormatType.STRIKETHROUGH)) {
+            code.append("Style strikethrough" + paragraphCount + " = " + prefix
+                    + "Doc.addStyle(\"strikethrough\", regular" + paragraphCount + ");\n");
+            code.append("StyleConstants.setStrikeThrough(strikethrough" + paragraphCount + ", true);\n");
+        }
+
+        if (anyPartHasType(TextFormatType.SUBSCRIPT)) {
+            code.append(
+                    "Style subscript" + paragraphCount + " = " + prefix + "Doc.addStyle(\"subscript\", regular"
+                            + paragraphCount + ");\n");
+            code.append("StyleConstants.setSubscript(subscript" + paragraphCount + ", true);\n");
+        }
+
+        if (anyPartHasType(TextFormatType.SUPERSCRIPT)) {
+            code.append("Style superscript" + paragraphCount + " = " + prefix + "Doc.addStyle(\"superscript\", regular"
+                    + paragraphCount + ");\n");
+            code.append("StyleConstants.setSuperscript(superscript" + paragraphCount + ", true);\n");
+        }
+
+        if (anyPartHasType(TextFormatType.CODE)) {
+            code.append("Style code" + paragraphCount + " = " + prefix + "Doc.addStyle(\"code\", regular"
+                    + paragraphCount + ");\n");
+            code.append("StyleConstants.setFontFamily(code" + paragraphCount + ", \"Monospaced\");\n");
+            code.append("StyleConstants.setBackground(code" + paragraphCount + ", new Color(240, 240, 240));\n");
+        }
+
+        code.append("\ntry {\n");
+        for (TextPart part : parts) {
+            switch (part.type) {
+                case BOLD:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", bold" + paragraphCount + ");\n");
+                    break;
+                case ITALIC:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", italic" + paragraphCount + ");\n");
+                    break;
+                case STRIKETHROUGH:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", strikethrough" + paragraphCount + ");\n");
+                    break;
+                case SUBSCRIPT:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", subscript" + paragraphCount + ");\n");
+                    break;
+                case SUPERSCRIPT:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", superscript" + paragraphCount + ");\n");
+                    break;
+                case CODE:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", code" + paragraphCount + ");\n");
+                    break;
+                default:
+                    code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                            + part.content + "\", regular" + paragraphCount + ");\n");
+                    break;
+            }
+        }
+        code.append("} catch (BadLocationException e) {\n");
+        code.append("    e.printStackTrace();\n");
+        code.append("}");
+
+        return code.toString();
+    }
+
+    @Override
+    public JTextPane toJavaSwingComponent() {
         JTextPane textPane = new JTextPane();
         textPane.setContentType("text/html");
         textPane.setEditable(false);
         StyledDocument doc = textPane.getStyledDocument();
+        textPane.setMargin(new Insets(10, 10, 10, 10));
 
         Style regular = doc.addStyle("regular", null);
         StyleConstants.setFontFamily(regular, "SansSerif");
@@ -98,6 +206,10 @@ public class ParagraphParser implements MarkdownParser {
         Style superscript = doc.addStyle("superscript", regular);
         StyleConstants.setSuperscript(superscript, true);
 
+        Style code = doc.addStyle("code", regular);
+        StyleConstants.setFontFamily(code, "Monospaced");
+        StyleConstants.setBackground(code, new Color(240, 240, 240));
+
         for (TextPart part : parts) {
             try {
                 switch (part.type) {
@@ -107,6 +219,9 @@ public class ParagraphParser implements MarkdownParser {
                     case ITALIC:
                         doc.insertString(doc.getLength(), part.content, italic);
                         break;
+                    // case LINK:
+                    // doc.insertString(doc.getLength(), part.content, linkStyle);
+                    // break;
                     case STRIKETHROUGH:
                         doc.insertString(doc.getLength(), part.content, strikethrough);
                         break;
@@ -116,8 +231,8 @@ public class ParagraphParser implements MarkdownParser {
                     case SUPERSCRIPT:
                         doc.insertString(doc.getLength(), part.content, superscript);
                         break;
-                    case NORMAL:
-                        doc.insertString(doc.getLength(), part.content, regular);
+                    case CODE:
+                        doc.insertString(doc.getLength(), part.content, code);
                         break;
                     default:
                         doc.insertString(doc.getLength(), part.content, regular);
@@ -128,6 +243,24 @@ public class ParagraphParser implements MarkdownParser {
             }
         }
 
-        return new JScrollPane(textPane);
+        return textPane;
     }
 }
+
+// textPane.addMouseListener(new MouseAdapter() {
+// @Override
+// public void mouseClicked(java.awt.event.MouseEvent e) {
+// try {
+// int offset = textPane.viewToModel(e.getPoint());
+// if (offset >= 0) {
+// Element element = doc.getCharacterElement(offset);
+// AttributeSet as = element.getAttributes();
+// if (StyleConstants.isUnderline(as)) {
+// Desktop.getDesktop().browse(new URI("http://www.example.com"));
+// }
+// }
+// } catch (Exception ex) {
+// ex.printStackTrace();
+// }
+// }
+// });

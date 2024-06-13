@@ -7,7 +7,9 @@ public interface MarkdownParser {
 
     public void parse();
 
-    public String toJavaSwingCode();
+    public String getResultPanelName(int paragraphCount);
+
+    public String toJavaSwingCode(int paragraphCount);
 
     public JComponent toJavaSwingComponent();
 }

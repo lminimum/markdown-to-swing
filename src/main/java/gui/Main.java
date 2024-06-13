@@ -1,5 +1,6 @@
 package gui;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,10 +13,12 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import parsers.DocumentParser;
+import parsers.TextLineNumber;
 
 public class Main extends JFrame {
     JTextArea textArea, displayArea;
     JPanel emptyPanel;
+    JScrollPane scrollPane1, scrollPane2, scrollPane3;
 
     public static void main(String[] args) {
         new Main();
@@ -26,21 +29,28 @@ public class Main extends JFrame {
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         textArea = new JTextArea();
+        textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
         textArea.setText(getExample());
-        JScrollPane scrollPane1 = new JScrollPane(textArea);
+        scrollPane1 = new JScrollPane(textArea);
         scrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        TextLineNumber tln1 = new TextLineNumber(textArea);
+        scrollPane1.setRowHeaderView(tln1);
 
         displayArea = new JTextArea();
+        displayArea.setBorder(new EmptyBorder(10, 10, 10, 10));
         displayArea.setEditable(false);
-        JScrollPane scrollPane2 = new JScrollPane(displayArea);
+        scrollPane2 = new JScrollPane(displayArea);
         scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        TextLineNumber tln2 = new TextLineNumber(displayArea);
+        scrollPane2.setRowHeaderView(tln2);
 
         emptyPanel = new JPanel();
-        JScrollPane scrollPane3 = new JScrollPane(emptyPanel);
+        emptyPanel.setBackground(java.awt.Color.WHITE);
+        scrollPane3 = new JScrollPane(emptyPanel);
         scrollPane3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         JPanel containerPanel = new JPanel();
         containerPanel.setLayout(new GridLayout(1, 3, 10, 10));
@@ -78,6 +88,7 @@ public class Main extends JFrame {
 
         setTitle("Markdown to Java Swing Converter");
         setSize(1800, 900);
+        setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
     }
@@ -87,14 +98,22 @@ public class Main extends JFrame {
         document.validate();
         document.parse();
 
-        String code = document.toJavaSwingCode();
+        String code = document.toJavaSwingCode(1);
         displayArea.setText(code);
 
         JPanel resultPanel = document.toJavaSwingComponent();
-        System.out.println("Component count:" + resultPanel.getComponentCount());
+        System.out.println("Component count: " + resultPanel.getComponentCount());
         emptyPanel.removeAll();
-        emptyPanel.add(resultPanel);
+        emptyPanel.add(resultPanel, BorderLayout.CENTER);
         revalidate();
+        repaint();
+        // https://stackoverflow.com/a/3548638/9725459
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                scrollPane2.getVerticalScrollBar().setValue(0);
+                scrollPane3.getVerticalScrollBar().setValue(0);
+            }
+        });
     }
 
     private void loadButtonClicked() {
@@ -118,6 +137,14 @@ public class Main extends JFrame {
                     text.append(scanner.nextLine()).append("\n");
                 }
                 textArea.setText(text.toString());
+                scanner.close();
+                // https://stackoverflow.com/a/3548638/9725459
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        scrollPane1.getVerticalScrollBar().setValue(0);
+                    }
+                });
+                convertButtonClicked();
             } catch (java.io.FileNotFoundException e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "File not found", "Error",
                         javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -189,11 +216,18 @@ public class Main extends JFrame {
         example.append("2. Item 2\n");
         example.append("3. Item 3\n\n");
         example.append("This is a paragraph with a table:\n\n");
-        example.append("| Header 1 | Header 2 | Header 3 |\n");
-        example.append("|----------|----------|----------|\n");
-        example.append("| Row 1    | Row 1    | Row 1    |\n");
-        example.append("| Row 2    | Row 2    | Row 2    |\n");
-        example.append("| Row 3    | Row 3    | Row 3    |\n");
+        // example.append("| Header 1 | Header 2 | Header 3 |\n");
+        // example.append("|----------|----------|----------|\n");
+        // example.append("| Row 1 | Row 1 | Row 1 |\n");
+        // example.append("| Row 2 | Row 2 | Row 2 |\n");
+        // example.append("| Row 3 | Row 3 | Row 3 |\n\n");
+        example.append("```java\n");
+        example.append("public class Main {\n");
+        example.append("    public static void main(String[] args) {\n");
+        example.append("        System.out.println(\"Hello, World!\");\n");
+        example.append("    }\n");
+        example.append("}\n");
+        example.append("```\n");
         return example.toString();
     }
 }

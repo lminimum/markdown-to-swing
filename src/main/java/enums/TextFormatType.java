@@ -7,4 +7,5 @@ public enum TextFormatType {
     STRIKETHROUGH,
     SUBSCRIPT,
     SUPERSCRIPT,
+    CODE,
 }

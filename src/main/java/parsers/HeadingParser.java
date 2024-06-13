@@ -1,5 +1,6 @@
 package parsers;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 public class HeadingParser implements MarkdownParser {
@@ -25,20 +26,49 @@ public class HeadingParser implements MarkdownParser {
         this.title = this.text.substring(this.level + 1).trim();
     }
 
+    private float getFontSize() {
+        return FONT_SIZES[Math.min(this.level - 1, FONT_SIZES.length - 1)];
+    }
+
     @Override
-    public String toJavaSwingCode() {
+    public String getResultPanelName(int paragraphCount) {
+        return "heading" + paragraphCount + "Label";
+    }
+
+    @Override
+    public String toJavaSwingCode(int paragraphCount) {
+        String prefix = "heading" + paragraphCount;
         StringBuilder code = new StringBuilder();
-        code.append("JLabel label = new JLabel(\"" + this.title + "\")\n");
-        float fontSize = FONT_SIZES[Math.min(this.level - 1, FONT_SIZES.length - 1)];
-        code.append("label.setFont(label.getFont().deriveFont(" + fontSize + "));");
+
+        code.append(
+                "String " + prefix + "Html = \"<html><body style='width: %1spx'>%1s</body></html>\";");
+        code.append("JLabel " + prefix + "Label = new JLabel(String.format(" + prefix + "Html, 420, \"" + this.title
+                + "\"));\n");
+        code.append(prefix + "Label.setFont(" + prefix + "Label.getFont().deriveFont(" + getFontSize() + "f));");
+
+        if (this.level <= 2) {
+            code.append(
+                    prefix + "Label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10),");
+            code.append("        BorderFactory.createMatteBorder(0, 0, 1, 0, java.awt.Color.GRAY)));");
+        } else {
+            code.append(prefix + "Label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));");
+        }
+
         return code.toString();
     }
 
     @Override
     public JLabel toJavaSwingComponent() {
-        JLabel label = new JLabel(this.title);
-        float fontSize = FONT_SIZES[Math.min(this.level - 1, FONT_SIZES.length - 1)];
-        label.setFont(label.getFont().deriveFont(fontSize));
+        // https://stackoverflow.com/questions/7861724/is-there-a-word-wrap-property-for-jlabel
+        String html = "<html><body style='width: %1spx'>%1s</body></html>";
+        JLabel label = new JLabel(String.format(html, 420, this.title));
+        label.setFont(label.getFont().deriveFont(getFontSize()));
+        if (this.level <= 2) {
+            label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10),
+                    BorderFactory.createMatteBorder(0, 0, 1, 0, java.awt.Color.GRAY)));
+        } else {
+            label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        }
         return label;
     }
 }

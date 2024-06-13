@@ -36,7 +36,7 @@ public class LinkParserTest {
         parser.parse();
         String expectedCode = "new JLabel(\"example\")";
         assertEquals("The Swing code generation should match the expected format", expectedCode,
-                parser.toJavaSwingCode());
+                parser.toJavaSwingCode(2));
     }
 
     @Test
