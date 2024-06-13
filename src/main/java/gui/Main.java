@@ -46,7 +46,7 @@ public class Main extends JFrame {
         TextLineNumber tln2 = new TextLineNumber(displayArea);
         scrollPane2.setRowHeaderView(tln2);
 
-        emptyPanel = new JPanel();
+        emptyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         emptyPanel.setBackground(java.awt.Color.WHITE);
         scrollPane3 = new JScrollPane(emptyPanel);
         scrollPane3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -215,6 +215,9 @@ public class Main extends JFrame {
         example.append("1. Item 1\n");
         example.append("2. Item 2\n");
         example.append("3. Item 3\n\n");
+        example.append("This is a horizontal line:\n\n");
+        example.append("---\n\n");
+        example.append("> This is a block quote\n\n");
         example.append("This is a paragraph with a table:\n\n");
         // example.append("| Header 1 | Header 2 | Header 3 |\n");
         // example.append("|----------|----------|----------|\n");

@@ -61,7 +61,7 @@ public class HeadingParser implements MarkdownParser {
     public JLabel toJavaSwingComponent() {
         // https://stackoverflow.com/questions/7861724/is-there-a-word-wrap-property-for-jlabel
         String html = "<html><body style='width: %1spx'>%1s</body></html>";
-        JLabel label = new JLabel(String.format(html, 420, this.title));
+        JLabel label = new JLabel(String.format(html, 400, this.title));
         label.setFont(label.getFont().deriveFont(getFontSize()));
         if (this.level <= 2) {
             label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10),
