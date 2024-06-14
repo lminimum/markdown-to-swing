@@ -35,13 +35,13 @@ public class CodeParser implements MarkdownParser {
     }
 
     @Override
-    public String getResultPanelName(int paragraphCount) {
-        return "codeBlock" + paragraphCount + "ScrollPane";
+    public String getResultPanelName(int paragraphIndex) {
+        return "codeBlock" + paragraphIndex + "ScrollPane";
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
-        String prefix = "codeBlock" + paragraphCount;
+    public String toJavaSwingCode(int paragraphIndex) {
+        String prefix = "codeBlock" + paragraphIndex;
         StringBuilder code = new StringBuilder();
 
         String clean_code = this.code.replaceAll("\"", "\\\\\"").replaceAll("\n", "\\\\n");

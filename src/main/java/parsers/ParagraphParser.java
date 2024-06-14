@@ -90,13 +90,13 @@ public class ParagraphParser implements MarkdownParser {
     }
 
     @Override
-    public String getResultPanelName(int paragraphCount) {
-        return "paragraph" + paragraphCount;
+    public String getResultPanelName(int paragraphIndex) {
+        return "paragraph" + paragraphIndex;
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
-        String prefix = "paragraph" + paragraphCount;
+    public String toJavaSwingCode(int paragraphIndex) {
+        String prefix = "paragraph" + paragraphIndex;
         StringBuilder code = new StringBuilder();
 
         if (this.type == ParagraphType.HORIZONTAL_RULE) {
@@ -119,47 +119,47 @@ public class ParagraphParser implements MarkdownParser {
             }
 
             if (anyPartHasType(TextFormatType.NORMAL)) {
-                code.append("Style regular" + paragraphCount + " = " + prefix + "Doc.addStyle(\"regular\", null);\n");
-                code.append("StyleConstants.setFontFamily(regular" + paragraphCount + ", \"SansSerif\");\n");
+                code.append("Style regular" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"regular\", null);\n");
+                code.append("StyleConstants.setFontFamily(regular" + paragraphIndex + ", \"SansSerif\");\n");
             }
 
             if (anyPartHasType(TextFormatType.BOLD)) {
-                code.append("Style bold" + paragraphCount + " = " + prefix + "Doc.addStyle(\"bold\", regular"
-                        + paragraphCount + ");\n");
-                code.append("StyleConstants.setBold(bold" + paragraphCount + ", true);\n");
+                code.append("Style bold" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"bold\", regular"
+                        + paragraphIndex + ");\n");
+                code.append("StyleConstants.setBold(bold" + paragraphIndex + ", true);\n");
             }
 
             if (anyPartHasType(TextFormatType.ITALIC)) {
-                code.append("Style italic" + paragraphCount + " = " + prefix + "Doc.addStyle(\"italic\", regular"
-                        + paragraphCount + ");\n");
-                code.append("StyleConstants.setItalic(italic" + paragraphCount + ", true);\n");
+                code.append("Style italic" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"italic\", regular"
+                        + paragraphIndex + ");\n");
+                code.append("StyleConstants.setItalic(italic" + paragraphIndex + ", true);\n");
             }
 
             if (anyPartHasType(TextFormatType.STRIKETHROUGH)) {
-                code.append("Style strikethrough" + paragraphCount + " = " + prefix
-                        + "Doc.addStyle(\"strikethrough\", regular" + paragraphCount + ");\n");
-                code.append("StyleConstants.setStrikeThrough(strikethrough" + paragraphCount + ", true);\n");
+                code.append("Style strikethrough" + paragraphIndex + " = " + prefix
+                        + "Doc.addStyle(\"strikethrough\", regular" + paragraphIndex + ");\n");
+                code.append("StyleConstants.setStrikeThrough(strikethrough" + paragraphIndex + ", true);\n");
             }
 
             if (anyPartHasType(TextFormatType.SUBSCRIPT)) {
                 code.append(
-                        "Style subscript" + paragraphCount + " = " + prefix + "Doc.addStyle(\"subscript\", regular"
-                                + paragraphCount + ");\n");
-                code.append("StyleConstants.setSubscript(subscript" + paragraphCount + ", true);\n");
+                        "Style subscript" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"subscript\", regular"
+                                + paragraphIndex + ");\n");
+                code.append("StyleConstants.setSubscript(subscript" + paragraphIndex + ", true);\n");
             }
 
             if (anyPartHasType(TextFormatType.SUPERSCRIPT)) {
                 code.append(
-                        "Style superscript" + paragraphCount + " = " + prefix + "Doc.addStyle(\"superscript\", regular"
-                                + paragraphCount + ");\n");
-                code.append("StyleConstants.setSuperscript(superscript" + paragraphCount + ", true);\n");
+                        "Style superscript" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"superscript\", regular"
+                                + paragraphIndex + ");\n");
+                code.append("StyleConstants.setSuperscript(superscript" + paragraphIndex + ", true);\n");
             }
 
             if (anyPartHasType(TextFormatType.CODE)) {
-                code.append("Style code" + paragraphCount + " = " + prefix + "Doc.addStyle(\"code\", regular"
-                        + paragraphCount + ");\n");
-                code.append("StyleConstants.setFontFamily(code" + paragraphCount + ", \"Monospaced\");\n");
-                code.append("StyleConstants.setBackground(code" + paragraphCount + ", new Color(240, 240, 240));\n");
+                code.append("Style code" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"code\", regular"
+                        + paragraphIndex + ");\n");
+                code.append("StyleConstants.setFontFamily(code" + paragraphIndex + ", \"Monospaced\");\n");
+                code.append("StyleConstants.setBackground(code" + paragraphIndex + ", new Color(240, 240, 240));\n");
             }
 
             code.append("\ntry {\n");
@@ -167,31 +167,31 @@ public class ParagraphParser implements MarkdownParser {
                 switch (part.type) {
                     case BOLD:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", bold" + paragraphCount + ");\n");
+                                + part.content + "\", bold" + paragraphIndex + ");\n");
                         break;
                     case ITALIC:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", italic" + paragraphCount + ");\n");
+                                + part.content + "\", italic" + paragraphIndex + ");\n");
                         break;
                     case STRIKETHROUGH:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", strikethrough" + paragraphCount + ");\n");
+                                + part.content + "\", strikethrough" + paragraphIndex + ");\n");
                         break;
                     case SUBSCRIPT:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", subscript" + paragraphCount + ");\n");
+                                + part.content + "\", subscript" + paragraphIndex + ");\n");
                         break;
                     case SUPERSCRIPT:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", superscript" + paragraphCount + ");\n");
+                                + part.content + "\", superscript" + paragraphIndex + ");\n");
                         break;
                     case CODE:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", code" + paragraphCount + ");\n");
+                                + part.content + "\", code" + paragraphIndex + ");\n");
                         break;
                     default:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
-                                + part.content + "\", regular" + paragraphCount + ");\n");
+                                + part.content + "\", regular" + paragraphIndex + ");\n");
                         break;
                 }
             }

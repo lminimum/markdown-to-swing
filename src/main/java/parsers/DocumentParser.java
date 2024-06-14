@@ -85,12 +85,12 @@ public class DocumentParser implements MarkdownParser {
     }
 
     @Override
-    public String getResultPanelName(int paragraphCount) {
+    public String getResultPanelName(int paragraphIndex) {
         return "mainScrollPane";
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
+    public String toJavaSwingCode(int paragraphIndex) {
         StringBuilder code = new StringBuilder();
         code.append("// Main Panel\n");
         code.append("JPanel mainPanel = new JPanel();\n");
@@ -104,16 +104,16 @@ public class DocumentParser implements MarkdownParser {
 
         for (MarkdownParser paragraph : paragraphs) {
             String className = paragraph.getClass().getSimpleName().replace("Parser", "");
-            String paragraphCode = paragraph.toJavaSwingCode(paragraphCount);
-            String panelName = paragraph.getResultPanelName(paragraphCount);
+            String paragraphCode = paragraph.toJavaSwingCode(paragraphIndex);
+            String panelName = paragraph.getResultPanelName(paragraphIndex);
 
-            code.append("// Paragraph " + paragraphCount + " - " + className + "\n");
+            code.append("// Paragraph " + paragraphIndex + " - " + className + "\n");
             code.append(paragraphCode + "\n\n");
 
             code.append(panelName + ".setAlignmentX(Component.LEFT_ALIGNMENT);\n");
             code.append("mainPanel.add(" + panelName + ");\n\n");
 
-            paragraphCount++;
+            paragraphIndex++;
         }
 
         return code.toString().replaceAll("\\n+$", "") + "\n";

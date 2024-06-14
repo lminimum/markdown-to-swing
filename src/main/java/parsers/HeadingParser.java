@@ -31,13 +31,13 @@ public class HeadingParser implements MarkdownParser {
     }
 
     @Override
-    public String getResultPanelName(int paragraphCount) {
-        return "heading" + paragraphCount + "Label";
+    public String getResultPanelName(int paragraphIndex) {
+        return "heading" + paragraphIndex + "Label";
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
-        String prefix = "heading" + paragraphCount;
+    public String toJavaSwingCode(int paragraphIndex) {
+        String prefix = "heading" + paragraphIndex;
         StringBuilder code = new StringBuilder();
 
         code.append(

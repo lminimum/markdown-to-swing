@@ -46,13 +46,13 @@ public class ListParser implements MarkdownParser {
     }
 
     @Override
-    public String getResultPanelName(int paragraphCount) {
-        return "list" + paragraphCount + "Panel";
+    public String getResultPanelName(int paragraphIndex) {
+        return "list" + paragraphIndex + "Panel";
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
-        String prefix = "list" + paragraphCount;
+    public String toJavaSwingCode(int paragraphIndex) {
+        String prefix = "list" + paragraphIndex;
         StringBuilder code = new StringBuilder();
 
         code.append("JPanel " + prefix + "Panel = new JPanel();\n");

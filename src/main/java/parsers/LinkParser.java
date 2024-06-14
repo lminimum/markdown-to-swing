@@ -29,7 +29,7 @@ public class LinkParser implements MarkdownParser {
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
+    public String toJavaSwingCode(int paragraphIndex) {
         return "new JLabel(\"" + title + "\")";
     }
 

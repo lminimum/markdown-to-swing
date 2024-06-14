@@ -63,13 +63,13 @@ public class TableParser implements MarkdownParser {
     }
 
     @Override
-    public String getResultPanelName(int paragraphCount) {
-        return "table" + paragraphCount + "ScrollPane";
+    public String getResultPanelName(int paragraphIndex) {
+        return "table" + paragraphIndex + "ScrollPane";
     }
 
     @Override
-    public String toJavaSwingCode(int paragraphCount) {
-        String prefix = "table" + paragraphCount;
+    public String toJavaSwingCode(int paragraphIndex) {
+        String prefix = "table" + paragraphIndex;
         StringBuilder code = new StringBuilder();
 
         code.append("String [] " + prefix + "Columns = {");
