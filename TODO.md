@@ -9,7 +9,7 @@
 - [x] List
 - [x] Code Block
 - [x] Table
-- [ ] Link
+- [x] Link
 - [ ] Image
 
 ## TODO Secondary
@@ -18,9 +18,3 @@
 - [ ] Make text formatting work in lists
 - [ ] Fix code block auto sizing to use max parent width and wrap content for height
 - [ ] Nested lists
-
-| Header 1 | Header 2 | Header 3 |
-| -------- | -------- | -------- |
-| Row 1    | Row 1    | Row 1    |
-| Row 2    | Row 2    | Row 2    |
-| Row 3    | Row 3    | Row 3    |

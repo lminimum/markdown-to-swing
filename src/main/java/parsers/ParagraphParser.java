@@ -1,9 +1,22 @@
+// Markdown to Java Swing Converter
+// Matthew Vine
+// CSIS 505-B01 (Liberty University)
+// July 5, 2024
+
 package parsers;
 
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +28,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.Element;
 
 import enums.ParagraphType;
 import enums.TextFormatType;
@@ -67,7 +83,7 @@ public class ParagraphParser implements MarkdownParser {
             } else if (matcher.group(5) != null) {
                 parts.add(new TextPart(matcher.group(5), TextFormatType.ITALIC));
             } else if (matcher.group(6) != null) {
-                // parts.add(new LinkParser(matcher.group(6), matcher.group(7)));
+                parts.add(new LinkPart(matcher.group(6), matcher.group(7)));
             } else if (matcher.group(8) != null) {
                 parts.add(new TextPart(matcher.group(9), TextFormatType.STRIKETHROUGH));
             } else if (matcher.group(10) != null) {
@@ -118,6 +134,10 @@ public class ParagraphParser implements MarkdownParser {
                 code.append("        BorderFactory.createMatteBorder(0, 3, 0, 0, Color.DARK_GRAY)));\n");
             }
 
+            if (anyPartHasType(TextFormatType.LINK)) {
+                code.append("Map<Integer, String> " + prefix + "LinkMap = new HashMap<>();");
+            }
+
             if (anyPartHasType(TextFormatType.NORMAL)) {
                 code.append("Style regular" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"regular\", null);\n");
                 code.append("StyleConstants.setFontFamily(regular" + paragraphIndex + ", \"SansSerif\");\n");
@@ -133,6 +153,13 @@ public class ParagraphParser implements MarkdownParser {
                 code.append("Style italic" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"italic\", regular"
                         + paragraphIndex + ");\n");
                 code.append("StyleConstants.setItalic(italic" + paragraphIndex + ", true);\n");
+            }
+
+            if (anyPartHasType(TextFormatType.LINK)) {
+                code.append("Style linkStyle" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"link\", regular"
+                        + paragraphIndex + ");\n");
+                code.append("StyleConstants.setForeground(linkStyle" + paragraphIndex + ", Color.BLUE);\n");
+                code.append("StyleConstants.setUnderline(linkStyle" + paragraphIndex + ", true);\n");
             }
 
             if (anyPartHasType(TextFormatType.STRIKETHROUGH)) {
@@ -173,6 +200,15 @@ public class ParagraphParser implements MarkdownParser {
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
                                 + part.content + "\", italic" + paragraphIndex + ");\n");
                         break;
+                    case LINK:
+                        if (part instanceof LinkPart) {
+                            LinkPart linkPart = (LinkPart) part;
+                            code.append("    " + prefix + "LinkMap.put(" + prefix + "Doc.getLength(), \""
+                                    + linkPart.address + "\");\n");
+                            code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
+                                    + linkPart.content + "\", linkStyle" + paragraphIndex + ");\n");
+                        }
+                        break;
                     case STRIKETHROUGH:
                         code.append("    " + prefix + "Doc.insertString(" + prefix + "Doc.getLength(), \""
                                 + part.content + "\", strikethrough" + paragraphIndex + ");\n");
@@ -198,6 +234,49 @@ public class ParagraphParser implements MarkdownParser {
             code.append("} catch (BadLocationException e) {\n");
             code.append("    e.printStackTrace();\n");
             code.append("}");
+
+            if (anyPartHasType(TextFormatType.LINK)) {
+                code.append("\n\n" + prefix + ".addMouseListener(new MouseAdapter() {\n");
+                code.append("    @Override\n");
+                code.append("    public void mouseClicked(MouseEvent e) {\n");
+                code.append("        try {\n");
+                code.append("            int offset = " + prefix + ".viewToModel2D(e.getPoint());\n");
+                code.append("            if (offset >= 0) {\n");
+                code.append("                Element element = " + prefix + "Doc.getCharacterElement(offset);\n");
+                code.append("                AttributeSet as = element.getAttributes();\n");
+                code.append("                if (StyleConstants.isUnderline(as)) {\n");
+                code.append("                    int start = element.getStartOffset();\n");
+                code.append("                    String url = " + prefix + "LinkMap.get(start);\n");
+                code.append("                    if (url != null) {\n");
+                code.append("                        Desktop.getDesktop().browse(new URI(url));\n");
+                code.append("                    }\n");
+                code.append("                }\n");
+                code.append("            }\n");
+                code.append("        } catch (Exception ex) {\n");
+                code.append("            ex.printStackTrace();\n");
+                code.append("        }\n");
+                code.append("    }\n");
+                code.append("});\n");
+
+                code.append("\n" + prefix + ".addMouseMotionListener(new MouseMotionAdapter() {\n");
+                code.append("    @Override\n");
+                code.append("    public void mouseMoved(MouseEvent e) {\n");
+                code.append("        int offset = " + prefix + ".viewToModel2D(e.getPoint());\n");
+                code.append("        if (offset >= 0) {\n");
+                code.append("            Element element = " + prefix + "Doc.getCharacterElement(offset);\n");
+                code.append("            AttributeSet as = element.getAttributes();\n");
+                code.append("            if (StyleConstants.isUnderline(as)) {\n");
+                code.append(
+                        "                " + prefix + ".setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));\n");
+                code.append("            } else {\n");
+                code.append("                " + prefix + ".setCursor(Cursor.getDefaultCursor());\n");
+                code.append("            }\n");
+                code.append("        } else {\n");
+                code.append("            " + prefix + ".setCursor(Cursor.getDefaultCursor());\n");
+                code.append("        }\n");
+                code.append("    }\n");
+                code.append("});\n");
+            }
         }
 
         return code.toString();
@@ -205,10 +284,12 @@ public class ParagraphParser implements MarkdownParser {
 
     @Override
     public JComponent toJavaSwingComponent() {
+        // TODO: move to a separate class
         if (this.type == ParagraphType.HORIZONTAL_RULE) {
             String html = "<html><body style='width: %1spx'>%1s</body></html>";
             JLabel label = new JLabel(String.format(html, 400, ""));
-            label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10),
+            label.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10),
                     BorderFactory.createMatteBorder(0, 0, 1, 0, java.awt.Color.GRAY)));
             return label;
         } else {
@@ -219,9 +300,12 @@ public class ParagraphParser implements MarkdownParser {
             textPane.setMargin(new Insets(10, 10, 10, 10));
 
             if (this.type == ParagraphType.BLOCK_QUOTE) {
-                textPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10),
+                textPane.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10),
                         BorderFactory.createMatteBorder(0, 3, 0, 0, Color.DARK_GRAY)));
             }
+
+            Map<Integer, String> linkMap = new HashMap<>();
 
             Style regular = doc.addStyle("regular", null);
             StyleConstants.setFontFamily(regular, "SansSerif");
@@ -258,9 +342,13 @@ public class ParagraphParser implements MarkdownParser {
                         case ITALIC:
                             doc.insertString(doc.getLength(), part.content, italic);
                             break;
-                        // case LINK:
-                        // doc.insertString(doc.getLength(), part.content, linkStyle);
-                        // break;
+                        case LINK:
+                            if (part instanceof LinkPart) {
+                                LinkPart linkPart = (LinkPart) part;
+                                linkMap.put(doc.getLength(), linkPart.address);
+                                doc.insertString(doc.getLength(), linkPart.content, linkStyle);
+                            }
+                            break;
                         case STRIKETHROUGH:
                             doc.insertString(doc.getLength(), part.content, strikethrough);
                             break;
@@ -282,25 +370,47 @@ public class ParagraphParser implements MarkdownParser {
                 }
             }
 
+            textPane.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    try {
+                        int offset = textPane.viewToModel2D(e.getPoint());
+                        if (offset >= 0) {
+                            Element element = doc.getCharacterElement(offset);
+                            AttributeSet as = element.getAttributes();
+                            if (StyleConstants.isUnderline(as)) {
+                                int start = element.getStartOffset();
+                                String url = linkMap.get(start);
+                                if (url != null) {
+                                    Desktop.getDesktop().browse(new URI(url));
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+            textPane.addMouseMotionListener(new MouseMotionAdapter() {
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    int offset = textPane.viewToModel2D(e.getPoint());
+                    if (offset >= 0) {
+                        Element element = doc.getCharacterElement(offset);
+                        AttributeSet as = element.getAttributes();
+                        if (StyleConstants.isUnderline(as)) {
+                            textPane.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                        } else {
+                            textPane.setCursor(Cursor.getDefaultCursor());
+                        }
+                    } else {
+                        textPane.setCursor(Cursor.getDefaultCursor());
+                    }
+                }
+            });
+
             return textPane;
         }
     }
 }
-
-// textPane.addMouseListener(new MouseAdapter() {
-// @Override
-// public void mouseClicked(java.awt.event.MouseEvent e) {
-// try {
-// int offset = textPane.viewToModel(e.getPoint());
-// if (offset >= 0) {
-// Element element = doc.getCharacterElement(offset);
-// AttributeSet as = element.getAttributes();
-// if (StyleConstants.isUnderline(as)) {
-// Desktop.getDesktop().browse(new URI("http://www.example.com"));
-// }
-// }
-// } catch (Exception ex) {
-// ex.printStackTrace();
-// }
-// }
-// });

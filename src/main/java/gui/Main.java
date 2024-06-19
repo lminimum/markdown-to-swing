@@ -1,6 +1,10 @@
+// Markdown to Java Swing Converter
+// Matthew Vine
+// CSIS 505-B01 (Liberty University)
+// July 5, 2024
+
 package gui;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -58,7 +62,7 @@ public class Main extends JFrame {
         containerPanel.add(scrollPane2);
         containerPanel.add(scrollPane3);
 
-        JButton convertButton = new JButton("Convert to Java Swing");
+        JButton convertButton = new JButton("Convert");
         convertButton.addActionListener(e -> convertButtonClicked());
 
         JButton loadButton = new JButton("Load File");
@@ -203,6 +207,8 @@ public class Main extends JFrame {
         example.append("###### Heading 6\n");
         example.append("This is a sixth paragraph\n\n");
         example.append("This is a paragraph with **bold** and *italic* text\n\n");
+        example.append(
+                "This is a paragraph two different links: [example](https://www.example.com) and [google](https://www.google.com)\n\n");
         example.append("This is a paragraph with `code`\n\n");
         example.append("This is a paragraph with ~~strikethrough~~\n\n");
         example.append("This is a paragraph with ~subscript~\n\n");
