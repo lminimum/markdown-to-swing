@@ -139,7 +139,6 @@ public class DocumentParser implements MarkdownParser {
         JPanel mainPanel = new JPanel();
         mainPanel.setBackground(Color.WHITE);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        // mainPanel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED));
 
         for (MarkdownParser paragraph : paragraphs) {
             JComponent component = paragraph.toJavaSwingComponent();

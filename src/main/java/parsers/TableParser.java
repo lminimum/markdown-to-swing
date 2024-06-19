@@ -6,10 +6,8 @@
 package parsers;
 
 import java.awt.Dimension;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -20,6 +18,11 @@ public class TableParser implements MarkdownParser {
 
     public TableParser(String text) {
         this.text = text;
+    }
+
+    @Override
+    public Boolean validate() {
+        return this.text.trim().matches("^\\|.*\\|\\s*\\n\\|.*\\|\\s*\\n\\|.*\\|\\s*\\n$");
     }
 
     @Override
