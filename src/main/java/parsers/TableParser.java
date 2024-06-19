@@ -49,7 +49,6 @@ public class TableParser implements MarkdownParser {
             final_rows.add(final_row.toArray(new String[final_row.size()]));
         }
         rows = final_rows.toArray(new String[final_rows.size()][]);
-        printTable();
     }
 
     public void printTable() {

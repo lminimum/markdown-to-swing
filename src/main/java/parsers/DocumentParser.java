@@ -40,7 +40,12 @@ public class DocumentParser implements MarkdownParser {
         List<String> paragraphsAndHeadings = parseParagraphsAndHeadings();
         for (String paragraphOrHeading : paragraphsAndHeadings) {
             // System.out.println("\"" + paragraphOrHeading + "\"");
-            if (paragraphOrHeading.trim().matches("^#+\\s.*")) { // Starts with one or more # followed by a space
+            if (paragraphOrHeading.trim().matches("^[-*_]+$")) {
+                // HORIZONTAL RULE
+                HorizontalRuleParser hr = new HorizontalRuleParser(paragraphOrHeading);
+                hr.parse();
+                paragraphs.add(hr);
+            } else if (paragraphOrHeading.trim().matches("^#+\\s.*")) { // Starts with one or more # followed by a space
                 // HEADING
                 HeadingParser heading = new HeadingParser(paragraphOrHeading);
                 heading.parse();
@@ -70,6 +75,11 @@ public class DocumentParser implements MarkdownParser {
                 TableParser table = new TableParser(paragraphOrHeading);
                 table.parse();
                 paragraphs.add(table);
+            } else if (paragraphOrHeading.trim().matches("\\!\\[(.*?)\\]\\((.*?)\\)|")) {
+                // IMAGE
+                ImageParser image = new ImageParser(paragraphOrHeading);
+                image.parse();
+                paragraphs.add(image);
             } else {
                 // PARAGRAPH
                 ParagraphParser paragraph = new ParagraphParser(paragraphOrHeading);

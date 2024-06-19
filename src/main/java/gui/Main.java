@@ -236,7 +236,9 @@ public class Main extends JFrame {
         example.append("        System.out.println(\"Hello, World!\");\n");
         example.append("    }\n");
         example.append("}\n");
-        example.append("```\n");
+        example.append("```\n\n");
+        example.append("This is an image:\n\n");
+        example.append("![small](src/main/resources/markdown.png)");
         return example.toString();
     }
 }
