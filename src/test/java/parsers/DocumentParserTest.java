@@ -16,7 +16,7 @@ public class DocumentParserTest {
 
     @Before
     public void setUp() {
-        parser = new DocumentParser();
+        parser = new DocumentParser("");
     }
 
     @Test

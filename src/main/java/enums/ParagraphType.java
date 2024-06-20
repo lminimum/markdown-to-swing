@@ -5,6 +5,9 @@
 
 package enums;
 
+/**
+ * Enum for the paragraph types.
+ */
 public enum ParagraphType {
     NORMAL,
     BLOCK_QUOTE,

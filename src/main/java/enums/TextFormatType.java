@@ -5,6 +5,9 @@
 
 package enums;
 
+/**
+ * Enum for the text format types.
+ */
 public enum TextFormatType {
     NORMAL,
     BOLD,

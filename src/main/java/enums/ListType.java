@@ -5,6 +5,9 @@
 
 package enums;
 
+/**
+ * Enum for the list types.
+ */
 public enum ListType {
     ORDERED,
     UNORDERED,
