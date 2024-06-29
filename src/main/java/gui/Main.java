@@ -254,7 +254,7 @@ public class Main extends JFrame {
         // text area
         if (!textArea.getText().isEmpty()) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Are you sure you want exit the application? You will lose any unsaved changes.", "Load new file",
+                    "Are you sure you want exit the application? You will lose any unsaved changes.", "Exit Applicaion",
                     JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.NO_OPTION) {
                 // If the user selects "No", don't exit
