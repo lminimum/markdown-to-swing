@@ -1,6 +1,6 @@
 # Markdown to Java Swing Converter
 
-![full demo](out/Full Demo - Part 1.png)
+![full demo](out/Full%20Demo%20-%20Part%201.png)
 
 ## Installation
 
