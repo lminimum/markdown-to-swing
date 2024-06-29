@@ -7,3 +7,4 @@
 - [ ] Fix multiple images
 - [ ] Inline images
 - [ ] Nested lists
+- [ ] Checkbox Lists
