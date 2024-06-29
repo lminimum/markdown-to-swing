@@ -1,5 +1,7 @@
 # Markdown to Java Swing Converter
 
+![full demo](out/Full Demo - Part 1.png)
+
 ## Installation
 
 1. Install [JDK](https://www.oracle.com/java/technologies/downloads/) (make sure its in your `PATH`).
