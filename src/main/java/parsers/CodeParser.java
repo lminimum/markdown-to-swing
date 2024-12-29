@@ -94,12 +94,12 @@ public class CodeParser implements MarkdownParser {
                 "JTextArea " + prefix + "TextArea = new JTextArea(\"" + cleanCode
                         + "\");\n");
         code.append(prefix + "TextArea.setFont(new Font(\"Monospaced\", Font.PLAIN, 12));\n");
-        code.append(prefix + "TextArea.setBackground(new Color(50, 50, 50));\n");
-        code.append(prefix + "TextArea.setForeground(Color.WHITE);\n");
+//        code.append(prefix + "TextArea.setBackground(new Color(50, 50, 50));\n");
+//        code.append(prefix + "TextArea.setForeground(Color.WHITE);\n");
         code.append(prefix + "TextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));\n\n");
 
         code.append("JScrollPane " + prefix + "ScrollPane = new JScrollPane(" + prefix + "TextArea);\n");
-        code.append(prefix + "ScrollPane.setBackground(Color.WHITE);\n");
+//        code.append(prefix + "ScrollPane.setBackground(Color.WHITE);\n");
         code.append(prefix + "ScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));\n");
         code.append(prefix + "ScrollPane.setPreferredSize(new Dimension(300, 150));");
 
@@ -117,13 +117,13 @@ public class CodeParser implements MarkdownParser {
         JTextArea codeTextArea = new JTextArea(this.code);
         // Set the font, background, and foreground color
         codeTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        codeTextArea.setBackground(new Color(50, 50, 50));
-        codeTextArea.setForeground(Color.WHITE);
+//        codeTextArea.setBackground(new Color(50, 50, 50));
+//        codeTextArea.setForeground(Color.WHITE);
         codeTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Create a JScrollPane with the JTextArea
         JScrollPane scrollPane = new JScrollPane(codeTextArea);
-        scrollPane.setBackground(Color.WHITE);
+//        scrollPane.setBackground(Color.WHITE);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         // Try to set the preferred size based on the number of lines and line height
         int lineCount = codeTextArea.getLineCount();

@@ -140,7 +140,7 @@ public class DocumentParser implements MarkdownParser {
         // Main Panel and Scroll Pane
         code.append("// Main Panel\n");
         code.append("JPanel mainPanel = new JPanel();\n");
-        code.append("mainPanel.setBackground(Color.WHITE);\n");
+//        code.append("mainPanel.setBackground(Color.WHITE);\n");
         code.append("mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));\n\n");
 
         code.append("// Main Scroll Pane\n");
@@ -179,7 +179,7 @@ public class DocumentParser implements MarkdownParser {
     public JPanel toJavaSwingComponent() {
         // Create a main panel
         JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(Color.WHITE);
+//        mainPanel.setBackground(Color.WHITE);
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         // Add each paragraph to the main panel with left alignment

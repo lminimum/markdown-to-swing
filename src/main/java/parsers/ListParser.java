@@ -105,7 +105,7 @@ public class ListParser implements MarkdownParser {
 
         // Add the code using the same method as toJavaSwingComponent
         code.append("JPanel " + prefix + "Panel = new JPanel();\n");
-        code.append(prefix + "Panel.setBackground(Color.WHITE);\n");
+//        code.append(prefix + "Panel.setBackground(Color.WHITE);\n");
         code.append(prefix + "Panel.setLayout(new BoxLayout(" + prefix + "Panel, BoxLayout.Y_AXIS));\n\n");
 
         int index = 1;
@@ -128,7 +128,7 @@ public class ListParser implements MarkdownParser {
     public JPanel toJavaSwingComponent() {
         // Create a panel for the list
         JPanel listPanel = new JPanel();
-        listPanel.setBackground(Color.WHITE);
+//        listPanel.setBackground(Color.WHITE);
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
 
         // Add each list item to the panel as a label with padding

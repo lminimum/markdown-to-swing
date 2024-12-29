@@ -192,7 +192,7 @@ public class ParagraphParser implements MarkdownParser {
         if (anyPartHasType(TextFormatType.LINK)) {
             code.append("Style linkStyle" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"link\", regular"
                     + paragraphIndex + ");\n");
-            code.append("StyleConstants.setForeground(linkStyle" + paragraphIndex + ", Color.BLUE);\n");
+//            code.append("StyleConstants.setForeground(linkStyle" + paragraphIndex + ", Color.BLUE);\n");
             code.append("StyleConstants.setUnderline(linkStyle" + paragraphIndex + ", true);\n");
         }
 
@@ -220,7 +220,7 @@ public class ParagraphParser implements MarkdownParser {
             code.append("Style code" + paragraphIndex + " = " + prefix + "Doc.addStyle(\"code\", regular"
                     + paragraphIndex + ");\n");
             code.append("StyleConstants.setFontFamily(code" + paragraphIndex + ", \"Monospaced\");\n");
-            code.append("StyleConstants.setBackground(code" + paragraphIndex + ", new Color(240, 240, 240));\n");
+//            code.append("StyleConstants.setBackground(code" + paragraphIndex + ", new Color(240, 240, 240));\n");
         }
 
         code.append("\ntry {\n");
@@ -351,7 +351,7 @@ public class ParagraphParser implements MarkdownParser {
         StyleConstants.setItalic(italic, true);
 
         Style linkStyle = doc.addStyle("link", regular);
-        StyleConstants.setForeground(linkStyle, Color.BLUE);
+//        StyleConstants.setForeground(linkStyle, Color.BLUE);
         StyleConstants.setUnderline(linkStyle, true);
 
         Style strikethrough = doc.addStyle("strikethrough", regular);
@@ -365,7 +365,7 @@ public class ParagraphParser implements MarkdownParser {
 
         Style code = doc.addStyle("code", regular);
         StyleConstants.setFontFamily(code, "Monospaced");
-        StyleConstants.setBackground(code, new Color(240, 240, 240));
+//        StyleConstants.setBackground(code, new Color(240, 240, 240));
 
         // For each part in the paragraph
         for (TextPart part : parts) {
